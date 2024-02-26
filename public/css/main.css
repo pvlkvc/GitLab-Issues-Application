@@ -1,0 +1,17 @@
+main {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  margin: 10px;
+}
+
+main .main-content-box {
+  width: 70%;
+  height: 100%;
+  padding: 10px;
+  background-color: rgb(47, 47, 47);
+  border-radius: 5px;
+  border: solid 1px #272727;
+  align-items: center;
+  gap: 10px;
+}
