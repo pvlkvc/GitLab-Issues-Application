@@ -1,9 +1,42 @@
 import express from 'express'
+import session from 'express-session'
 import logger from 'morgan'
 import appRoute from './route/app_route.mjs'
 
 const app = express()
 app.set('view engine', 'ejs')
+
+// Enable the session
+app.use(session({
+  cookie: {
+    maxAge: 600000
+  },
+  resave: false,
+  saveUninitialized: true,
+  secret: 'mitch is a drug addict'
+}))
+
+// Enable use of flash messages and prepare the data object
+app.use((req, res, next) => {
+  res.data = {}
+  res.data.flashMessage = null
+  if (req.session && req.session.flashMessage) {
+    res.data.flashMessage = req.session.flashMessage
+    req.session.flashMessage = null
+  }
+  next()
+})
+
+// Check if user is logged in and prepare the data object
+app.use((req, res, next) => {
+  res.data.oauth = {
+    access_token: null
+  }
+  if (req.session && req.session.oauth) {
+    res.data.oauth.access_token = req.session.oauth.access_token ?? null
+  }
+  next()
+})
 
 app.use(logger('dev'))
 app.use(express.urlencoded({ extended: true }))

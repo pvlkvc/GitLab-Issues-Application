@@ -11,4 +11,5 @@ router.get('/forbidden', controller.errorForbidden)
 router.get('/not-found', controller.errorNotFound)
 
 // GitLab
-router.get('/', controller.issues)
+router.get('/', controller.home)
+router.get('/issue/:id', controller.issue)

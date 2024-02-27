@@ -5,11 +5,38 @@
 
 <%- include('header') -%>
 
-<main class="row">
-    <div class="main-content-box column">
-        
+<body>
+    <main class="row">
+        <div class="issue-scroll column">
+            <% for (let i = issues.length - 1; i >= 0; i--) { %>
+                <div class="issue-entry">
+                    <p><%= `${issues[i].title}` %></p>
+                </div>
+            <% } %>
+        </div>
+        <div class="gallery row">
+            <% for (let i = issues.length - 1; i >= 0; i--) { %>
+                <% if (issues[i].iid == current_issue) { %>
+                    <div class="column">
+                        <p class="title"><%= issues[i].title %></p>
+                        <div class="row">
+                            <p class="status"><%= issues[i].state %></p>
+                            <p>Issue created on </p>
+                            <p><%= new Date(issues[i].created_at).toDateString() %></p>
+                            <p>by</p>
+                            <a><p><%= issues[i].author.name %></p></a>
+                        </div>
+                        <p><%= `${issues[i].description}` %></p>
+                        <div class="column">
 
-        <%- include('footer') -%>
-    </div>
+                        </div>
+                    </div>
+                    <% break %>
+                <% } %>
+            <%} %>
 
-</main>
+        </div>
+    </main>
+</body>
+
+<%- include('footer') -%>
