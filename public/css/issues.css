@@ -1,3 +1,13 @@
+p {
+  margin: 0;
+}
+
+.centered-row {
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0px 5px 0px;
+}
+
 .issue-scroll {
   background-color: rgb(52, 52, 52);
   width: 20%;
@@ -15,9 +25,84 @@
 
 .gallery .title {
   margin: 0;
+  font-size: 30px;
+  font-weight: normal;
+  border: solid white;
+  padding: 0px 0px 5px 0px;
+  border-width: 0px 0px 1px 0px;
 }
 
-.gallery .button {
-  border: solid rgb(174, 174, 174) 1px;
-  background-color: white;
+.gallery .subtitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: normal;
+  border: solid white;
+  padding: 5px 0px 5px 0px;
+  border-width: 1px 0px 1px 0px;
 }
+
+.gallery .status {
+  border-radius: 15px;
+  padding: 5px 10px 5px 10px;
+}
+
+.gallery .status-opened {
+  background-color: rgb(122, 198, 134);
+}
+
+.gallery .status-closed {
+  background-color: rgb(193, 92, 92);
+}
+
+.gallery .status-unknown {
+  background-color: rgb(99, 141, 182);
+}
+
+.multiline-text {
+  white-space: pre-wrap;
+}
+
+.issue-description {
+  padding: 10px 0px 10px 0px;
+}
+
+.activity-column {
+  gap: 10px;
+}
+
+.system-note {
+  gap: 10px;
+}
+
+.system-note .activity-gutter {
+  width: 40px;
+  align-items: center;
+}
+
+.system-note .activity-gutter p {
+  text-align: center;
+}
+
+.user-note {
+  gap: 10px;
+}
+
+.user-note .activity-gutter .user-avatar img {
+  width: 40px;
+  height: auto;
+  border-radius: 20px;
+}
+
+.user-note .user-comment {
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.user-note .user-comment .user-comment-author {
+  margin: 0px 0px 5px 0px;
+  border: solid white;
+  border-width: 0px 0px 1px 0px;
+  padding: 0px 0px 5px 0px;
+}
+

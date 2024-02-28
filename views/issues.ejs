@@ -18,22 +18,51 @@
             <% for (let i = issues.length - 1; i >= 0; i--) { %>
                 <% if (issues[i].iid == current_issue) { %>
                     <div class="column">
-                        <p class="title"><%= issues[i].title %></p>
-                        <div class="row">
-                            <p class="status"><%= issues[i].state %></p>
+                        <h1 class="title"><%= issues[i].title %></h1>
+                        <div class="centered-row row">
+                            <% if (issues[i].state == 'opened') { %>
+                                <p class="status status-opened">Open</p>
+                            <% } else if (issues[i].state == 'closed') { %>
+                                <p class="status status-closed">Closed</p>
+                            <% } else { %>
+                                <p class="status status-unknown">issues[i].state</p>
+                            <% } %>
                             <p>Issue created on </p>
                             <p><%= new Date(issues[i].created_at).toDateString() %></p>
                             <p>by</p>
                             <a><p><%= issues[i].author.name %></p></a>
                         </div>
-                        <p><%= `${issues[i].description}` %></p>
-                        <div class="column">
-
+                        <p class="multiline-text issue-description"><%= `${issues[i].description}` %></p>
+                        <div class="activity-column column">
+                            <h2 class="subtitle">Activity</h2>
+                            <% for (let i = notes.length - 1; i >= 0; i--) { %>
+                                <% if (notes[i].system == true) { %>
+                                    <div class="system-note row">
+                                        <div class="activity-gutter column">
+                                            <p>•</p>
+                                        </div>
+                                        <p><%= notes[i].author.name %> <%= notes[i].body %></p>
+                                        <p><%= new Date(notes[i].created_at).toDateString() %></p>
+                                    </div>
+                                <% } else { %>
+                                  <div class="user-note row">
+                                      <div class="activity-gutter column">
+                                          <div class="user-avatar">
+                                              <img src="<%= notes[i].author.avatar_url %>">
+                                          </div>
+                                      </div>
+                                      <div class="user-comment">
+                                          <p class="user-comment-author"><b><%= notes[i].author.name %></b> @<%= notes[i].author.username %> • <%= new Date(notes[i].created_at).toDateString() %></p>
+                                          <p class="multiline-text"><%= notes[i].body %></p>
+                                      </div>
+                                  </div>
+                                <% } %>
+                            <% } %>
                         </div>
                     </div>
                     <% break %>
                 <% } %>
-            <%} %>
+            <% } %>
 
         </div>
     </main>
