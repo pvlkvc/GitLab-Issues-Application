@@ -4,15 +4,5 @@ main {
   justify-content: center;
   margin: 10px;
   gap: 10px;
-}
-
-main .gallery {
-  width: 60%;
-  padding: 10px;
-  background-color: rgb(47, 47, 47);
-  border-radius: 5px;
-  border: solid 1px #272727;
-  align-items: center;
-  gap: 10px;
   color: white;
 }

@@ -1,0 +1,226 @@
+/*
+Miscellaneous / General
+*/
+p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.gray {
+  color: gray;
+}
+
+.basic-button {
+  border: none;
+  background-color: rgb(215, 186, 214);
+  font-size: 15px;
+  border-radius: 5px;
+}
+
+.basic-button:hover {
+  background-color: rgb(215, 186, 214);
+  cursor: pointer;
+}
+
+.wrap-row {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.rounded {
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+/*
+Left side issue scroll
+*/
+.issue-scroll {
+  background-color: rgb(47, 47, 47);
+  border: solid 1px #272727;
+  width: 20%;
+}
+
+.issue-entry {
+  width: 100%;
+  height: fit-content;
+  padding: 10px;
+  font-size: 1em;
+  text-align: left;
+  border: solid rgb(93, 93, 93);
+  border-width: 0px 0px 1px 0px;
+  color: white;
+  background-color: transparent;
+}
+
+.issue-entry:hover {
+  cursor: pointer;
+  background-color: rgb(36, 36, 36);
+}
+
+/*
+Gallery
+*/
+main .gallery {
+  width: 70%;
+  align-items: center;
+  gap: 10px;
+  background-color: rgb(47, 47, 47);
+  border: solid 1px #272727;
+}
+
+/*
+Main gallery display
+*/
+.gallery-main {
+  width: 70%;
+  gap: 10px;
+  margin: 10px 20px 10px 20px;
+}
+
+/*
+Title & below title rows
+*/
+.title-row {
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 0px 5px 0px;
+  border: solid white;
+  border-width: 0px 0px 1px 0px;
+}
+
+.gallery .title-row .title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: normal;
+}
+
+.centered-row {
+  align-items: center;
+  gap: 10px;
+}
+
+.gallery .subtitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: normal;
+  border: solid white;
+  padding: 5px 0px 5px 0px;
+  border-width: 1px 0px 1px 0px;
+}
+
+/*
+Status
+*/
+.gallery .status {
+  border-radius: 15px;
+  padding: 5px 10px 5px 10px;
+}
+
+.gallery .status-opened {
+  background-color: rgb(122, 198, 134);
+}
+
+.gallery .status-closed {
+  background-color: rgb(193, 92, 92);
+}
+
+.gallery .status-unknown {
+  background-color: rgb(99, 141, 182);
+}
+
+/*
+Description
+*/
+.issue-description {
+  padding: 10px 0px 10px 0px;
+}
+
+/*
+Activity
+*/
+.activity-column {
+  gap: 10px;
+}
+
+.system-note {
+  gap: 10px;
+}
+
+.system-note .activity-gutter {
+  width: 40px;
+  align-items: center;
+}
+
+.system-note .activity-gutter p {
+  text-align: center;
+}
+
+.user-note {
+  gap: 10px;
+}
+
+.user-note .activity-gutter .user-avatar img {
+  width: 40px;
+  height: auto;
+  border-radius: 20px;
+}
+
+.user-note .user-comment {
+  padding: 10px;
+  border: 1px solid white;
+}
+
+.user-note .user-comment .user-comment-author {
+  margin: 0px 0px 5px 0px;
+  border: solid white;
+  border-width: 0px 0px 1px 0px;
+  padding: 0px 0px 5px 0px;
+}
+
+/*
+New comment
+*/
+.comment-form {
+  gap: 5px;
+  align-items: end;
+}
+
+.new-comment-area {
+  white-space: pre-wrap;
+  color: rgb(255, 255, 255);
+  margin: 0;
+  padding: 3px 3px 3px 3px;
+  height: 80px;
+  width: 100%;
+  font-size: 15px;
+  resize: none;
+  outline: none;
+  border: rgb(215, 186, 214) solid;
+  border-width: 0px 0px 3px 0px;
+  background-color: rgba(0, 0, 0, 0.232);
+}
+
+/*
+Right side
+*/
+.gallery-side {
+  width: 30%;
+  height: 100%;
+  background-color: rgb(43, 43, 43);
+  border: 1px solid rgb(38, 38, 38);
+}
+
+.gallery-side-item {
+  border: solid rgb(93, 93, 93);
+  border-width: 0px 0px 1px 0px;
+}
+
+/*
+Right Side - Labels
+*/
+.issue-label {
+  background-color: pink;
+  border-radius: 15px;
+  padding: 5px 10px 5px 10px;
+}

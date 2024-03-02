@@ -50,6 +50,8 @@ controller.issue = async (req, res) => {
   const notes = await resp.json()
   data.notes = notes
 
+  console.log(data.issues[3].assignees)
+
   console.log('# Building website')
   res.render('issues', data)
 }
