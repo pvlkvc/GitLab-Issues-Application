@@ -32,8 +32,18 @@ app.use((req, res, next) => {
   res.data.oauth = {
     access_token: null
   }
+  res.data.config = {
+    base_url: null,
+    repository_id: null
+  }
   if (req.session && req.session.oauth) {
     res.data.oauth.access_token = req.session.oauth.access_token ?? null
+  }
+  if (req.session && req.session.config) {
+    res.data.config.base_url = req.session.config.base_url ?? null
+  }
+  if (req.session && req.session.config) {
+    res.data.config.repository_id = req.session.config.repository_id ?? null
   }
   next()
 })

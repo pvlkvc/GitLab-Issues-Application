@@ -39,6 +39,10 @@ header .logobox a .white{
 }
 
 /* Header's #2 Child */
+header .inputbox {
+
+}
+
 header form {
   width: 33%;
   height: 100%;
