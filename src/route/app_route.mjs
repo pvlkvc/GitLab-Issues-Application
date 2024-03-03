@@ -10,6 +10,13 @@ export default router
 router.get('/forbidden', controller.errorForbidden)
 router.get('/not-found', controller.errorNotFound)
 
+// Authentication
+router.get('/auth', controller.authenticateRequest)
+router.get('/auth/callback', controller.authenticateResponse)
+router.get('/auth/failure', controller.authenticateFailure)
+router.get('/auth/success', controller.authenticateSuccess)
+router.get('/auth/logout', controller.authenticateLogout)
+
 // GitLab
 router.get('/', controller.home)
 

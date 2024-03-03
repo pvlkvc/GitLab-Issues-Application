@@ -1,20 +1,43 @@
 import express from 'express'
 import session from 'express-session'
 import logger from 'morgan'
+import passport from 'passport'
+import gitlabStrategy from 'passport-gitlab2'
 import appRoute from './route/app_route.mjs'
 
 const app = express()
 app.set('view engine', 'ejs')
 
+// Prepare authorization
+passport.use(new gitlabStrategy.Strategy(
+  {
+    clientID: process.env.GITLAB_APP_ID,
+    clientSecret: process.env.GITLAB_APP_SECRET,
+    callbackURL: 'https://cscloud7-207.lnu.se/b3/auth/callback',
+    baseURL: process.env.BASE_URL
+  },
+  function (accessToken, refreshToken, profile, cb) {
+    return cb(null, profile)
+  }
+))
+passport.serializeUser(function (user, cb) {
+  cb(null, user)
+})
+passport.deserializeUser(function (user, cb) {
+  cb(null, user)
+})
+
 // Enable the session
 app.use(session({
   cookie: {
-    maxAge: 600000
+    maxAge: 6000000
   },
   resave: false,
   saveUninitialized: true,
-  secret: 'mitch is a drug addict'
+  secret: 'mitch'
 }))
+app.use(passport.initialize())
+app.use(passport.session())
 
 // Enable use of flash messages and prepare the data object
 app.use((req, res, next) => {
@@ -27,7 +50,7 @@ app.use((req, res, next) => {
   next()
 })
 
-// Check if user is logged in and prepare the data object
+// Preparing session specific data objects
 app.use((req, res, next) => {
   res.data.oauth = {
     access_token: null

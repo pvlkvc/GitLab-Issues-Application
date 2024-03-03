@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv'
+import passport from 'passport'
 
 export const controller = {}
 
@@ -15,6 +16,41 @@ controller.errorNotFound = (req, res) => {
   res.send(404)
 }
 
+// Authentication
+controller.isLoggedIn = async (req, res, next) => {
+  req.user ? next() : res.sendStatus(401)
+}
+
+controller.authenticateRequest = async (req, res) => {
+  passport.authenticate('gitlab', { scope: ['api'] })
+  console.log('# Passport: Authentication request')
+}
+
+controller.authenticateResponse = async (req, res) => {
+  console.log('# Passport: Received callback')
+  passport.authenticate('gitlab', {
+    successRedirect: '/b3/auth/success',
+    failureRedirect: '/b3/auth/failure'
+  })
+}
+
+controller.authenticateFailure = async (req, res) => {
+  res.send('Something went wrong. Please try again')
+}
+
+controller.authenticateSuccess = async (req, res) => {
+  controller.isLoggedIn(req, res, () => {
+    res.send(`${req.user.displayName} You are able to access protected territory!`)
+  })
+}
+
+controller.authenticateLogout = async (req, res) => {
+  req.logout()
+  req.session.destroy()
+  res.send('You are now logged out!')
+}
+
+// Gitlab
 controller.home = async (req, res) => {
   res.redirect('/b3/issue/1')
 }
@@ -55,7 +91,7 @@ controller.issue = async (req, res) => {
     if (!data.issues) {
       console.log('# Fetching repository issues')
 
-      const url = 'https://' + data.config.base_url + '/api/v4/projects/' + data.config.repository_id + '/issues?per_page=50'
+      const url = data.config.base_url + '/api/v4/projects/' + data.config.repository_id + '/issues?per_page=50'
       const headers = {
         Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
       }
