@@ -12,7 +12,9 @@ router.get('/not-found', controller.errorNotFound)
 
 // Authentication
 router.get('/auth', controller.authenticateRequest)
-router.get('/auth/callback', controller.authenticateResponse)
+router.get('/auth/callback', controller.authenticateCode)
+router.get('/auth/token', controller.receiveToken)
+
 router.get('/auth/failure', controller.authenticateFailure)
 router.get('/auth/success', controller.authenticateSuccess)
 router.get('/auth/logout', controller.authenticateLogout)

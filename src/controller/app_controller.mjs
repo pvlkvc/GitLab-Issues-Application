@@ -25,7 +25,7 @@ controller.authenticateRequest = async (req, res) => {
   res.status(301).redirect(process.env.BASE_URL + `/oauth/authorize?client_id=${process.env.GITLAB_APP_ID}&redirect_uri=${process.env.GITLAB_CALLBACK_URL}&response_type=code&state=${process.env.GITLAB_STATE}&scope=api`)
 }
 
-controller.authenticateResponse = async (req, res) => {
+controller.authenticateCode = async (req, res) => {
   console.log('# Received callback')
 
   // Retrieving code from the URL
@@ -41,6 +41,11 @@ controller.authenticateResponse = async (req, res) => {
   }
   const resp = await fetch(newUrl, options)
   console.log(resp)
+}
+
+controller.receiveToken = async (req, res) => {
+  console.log('# Received a token!')
+  console.log(res)
 }
 
 controller.authenticateFailure = async (req, res) => {
