@@ -29,8 +29,10 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "morgan": "^1.10.0",
+    "node-rest-client": "^3.1.1",
     "passport": "^0.7.0",
-    "passport-gitlab2": "^5.0.0"
+    "passport-gitlab2": "^5.0.0",
+    "rest-client": "^0.1.5"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

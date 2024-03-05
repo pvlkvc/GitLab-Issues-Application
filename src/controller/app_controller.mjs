@@ -1,5 +1,4 @@
 import * as dotenv from 'dotenv'
-import passport from 'passport'
 
 export const controller = {}
 
@@ -22,16 +21,26 @@ controller.isLoggedIn = async (req, res, next) => {
 }
 
 controller.authenticateRequest = async (req, res) => {
-  passport.authenticate('gitlab', { scope: ['api'] })
-  console.log('# Passport: Authentication request')
+  console.log('# Authentication request')
+  res.status(301).redirect(process.env.BASE_URL + `/oauth/authorize?client_id=${process.env.GITLAB_APP_ID}&redirect_uri=${process.env.GITLAB_CALLBACK_URL}&response_type=code&state=${process.env.GITLAB_STATE}&scope=api`)
 }
 
 controller.authenticateResponse = async (req, res) => {
-  console.log('# Passport: Received callback')
-  passport.authenticate('gitlab', {
-    successRedirect: '/b3/auth/success',
-    failureRedirect: '/b3/auth/failure'
-  })
+  console.log('# Received callback')
+
+  // Retrieving code from the URL
+  const url = res.req.url
+  const params = url.split('?')
+  const asJson = JSON.parse('{"' + decodeURI(params[1]).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
+  const code = asJson.code
+
+  const newUrl = process.env.BASE_URL + `/oauth/token?client_id=${process.env.GITLAB_APP_ID}&client_secret=${process.env.GITLAB_APP_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=${process.env.GITLAB_TOKEN_URL}`
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  }
+  const resp = await fetch(newUrl, options)
+  console.log(resp)
 }
 
 controller.authenticateFailure = async (req, res) => {
@@ -39,9 +48,7 @@ controller.authenticateFailure = async (req, res) => {
 }
 
 controller.authenticateSuccess = async (req, res) => {
-  controller.isLoggedIn(req, res, () => {
-    res.send(`${req.user.displayName} You are able to access protected territory!`)
-  })
+  console.log('success')
 }
 
 controller.authenticateLogout = async (req, res) => {
