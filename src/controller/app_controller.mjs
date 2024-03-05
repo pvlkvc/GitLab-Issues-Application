@@ -15,9 +15,9 @@ controller.errorNotFound = (req, res) => {
   res.send(404)
 }
 
-// Authentication
-controller.isLoggedIn = async (req, res, next) => {
-  req.user ? next() : res.sendStatus(401)
+// OAuth Authentication
+controller.unauthenticatedPage = async (req, res) => {
+  res.render('unauthenticated', res.data)
 }
 
 controller.authenticateRequest = async (req, res) => {
@@ -25,35 +25,35 @@ controller.authenticateRequest = async (req, res) => {
   res.status(301).redirect(process.env.BASE_URL + `/oauth/authorize?client_id=${process.env.GITLAB_APP_ID}&redirect_uri=${process.env.GITLAB_CALLBACK_URL}&response_type=code&state=${process.env.GITLAB_STATE}&scope=api`)
 }
 
-controller.authenticateCode = async (req, res) => {
+controller.authenticateCallback = async (req, res) => {
   console.log('# Received callback')
 
   // Retrieving code from the URL
-  const url = res.req.url
-  const params = url.split('?')
-  const asJson = JSON.parse('{"' + decodeURI(params[1]).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
-  const code = asJson.code
+  const url = new URL(process.env.BASE_URL + res.req.url)
+  const params = new URLSearchParams(url.search)
+  const returnedCode = params.get('code')
 
-  const newUrl = process.env.BASE_URL + `/oauth/token?client_id=${process.env.GITLAB_APP_ID}&client_secret=${process.env.GITLAB_APP_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=${process.env.GITLAB_TOKEN_URL}`
+  // Requesting the access token
+  const newUrl = process.env.BASE_URL + '/oauth/token'
+  const parameters = {
+    client_id: process.env.GITLAB_APP_ID,
+    client_secret: process.env.GITLAB_APP_SECRET,
+    code: returnedCode,
+    grant_type: 'authorization_code',
+    redirect_uri: process.env.GITLAB_CALLBACK_URL
+  }
   const options = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(parameters)
   }
+
   const resp = await fetch(newUrl, options)
-  console.log(resp)
-}
-
-controller.receiveToken = async (req, res) => {
-  console.log('# Received a token!')
-  console.log(res)
-}
-
-controller.authenticateFailure = async (req, res) => {
-  res.send('Something went wrong. Please try again')
-}
-
-controller.authenticateSuccess = async (req, res) => {
-  console.log('success')
+  const data = await resp.json()
+  req.session.oauth = {
+    access_token: data.access_token
+  }
+  res.redirect('/b3')
 }
 
 controller.authenticateLogout = async (req, res) => {
@@ -62,66 +62,93 @@ controller.authenticateLogout = async (req, res) => {
   res.send('You are now logged out!')
 }
 
-// Gitlab
-controller.home = async (req, res) => {
-  res.redirect('/b3/issue/1')
-}
-
-controller.isConfigured = (req, res, next) => {
-  console.log('# Checking for config presence')
-  console.log('url: ', res.data.config.base_url)
-  console.log('id: ', res.data.config.repository_id)
-  if (res.data.config.base_url && res.data.config.repository_id) {
+// Status checks
+controller.isLoggedIn = (req, res, next) => {
+  console.log('# Checking for access token presence')
+  console.log('token: ', res.data.oauth.access_token)
+  if (res.data.oauth.access_token) {
+    console.log('Token present')
     next()
   } else {
-    res.status(303)
-    res.redirect('/b3/config')
+    console.log('Missing token')
+    res.status(403)
+    res.redirect('/b3/auth')
   }
 }
 
-controller.configForm = (req, res) => {
-  res.render('config', res.data)
+controller.isConfigured = (req, res, next) => {
+  console.log('# Checking for repository id presence')
+  if (res.data.config.repository_id) {
+    next()
+  } else {
+    res.status(403)
+    res.redirect('/b3/no-rep')
+  }
 }
 
-controller.configSubmit = async (req, res) => {
+// Repository config
+controller.fetchProjects = async (req, res) => {
+  console.log('# Fetching available repositories')
+
+  const url = process.env.BASE_URL + '/api/v4/projects?membership=true'
+  const headers = {
+    Authorization: `Bearer ${res.data.oauth.access_token}`
+  }
+  const resp = await fetch(url, { headers })
+  const projects = await resp.json()
+
+  res.data.projects = projects
+}
+
+controller.noRep = async (req, res) => {
+  await controller.fetchProjects(req, res)
+  res.render('no_rep', res.data)
+}
+
+controller.repSave = async (req, res) => {
   req.session.config = {
-    base_url: req.body.base_url,
     repository_id: req.body.repository_id
   }
   res.redirect('/b3')
 }
 
-// Authorization
-controller.issue = async (req, res) => {
-  // todo: make this retrievable from maybe local memory or smth? or session specific?
-  controller.isConfigured(req, res, async () => {
-    const data = res.data
-    const headers = {
-      Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
-    }
+// Gitlab
+controller.home = async (req, res) => {
+  controller.isLoggedIn(req, res, async () => {
+    controller.isConfigured(req, res, async () => {
+      await controller.fetchProjects(req, res)
+      res.render('home', res.data)
+    })
+  })
+}
 
-    if (!data.issues) {
+controller.issue = async (req, res) => {
+  controller.isLoggedIn(req, res, async () => {
+    controller.isConfigured(req, res, async () => {
+      await controller.fetchProjects(req, res)
+      const data = res.data
+      const headers = {
+        Authorization: `Bearer ${res.data.oauth.access_token}`
+      }
+
       console.log('# Fetching repository issues')
 
-      const url = data.config.base_url + '/api/v4/projects/' + data.config.repository_id + '/issues?per_page=50'
-      const headers = {
-        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
-      }
-      const resp = await fetch(url, { headers })
+      let url = process.env.BASE_URL + '/api/v4/projects/' + data.config.repository_id + '/issues?per_page=50'
+      let resp = await fetch(url, { headers })
       const issues = await resp.json()
 
       data.issues = issues
-    }
 
-    console.log('# Fetching issue notes')
+      console.log('# Fetching issue notes')
 
-    data.current_issue = req.params.id
-    const url = 'https://' + data.config.base_url + '/api/v4/projects/' + data.config.repository_id + '/issues/' + data.current_issue + '/notes'
-    const resp = await fetch(url, { headers })
-    const notes = await resp.json()
-    data.notes = notes
+      data.current_issue = req.params.id
+      url = process.env.BASE_URL + '/api/v4/projects/' + data.config.repository_id + '/issues/' + data.current_issue + '/notes'
+      resp = await fetch(url, { headers })
+      const notes = await resp.json()
+      data.notes = notes
 
-    console.log('# Building website')
-    res.render('issues', data)
+      console.log('# Building website')
+      res.render('issues', data)
+    })
   })
 }

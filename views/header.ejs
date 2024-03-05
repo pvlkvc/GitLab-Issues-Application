@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 
 <header class="row">
+    <div class="header-element">
+        <form class="row" method="post" action="/school/b3/config">
+            <select name="repository_id" id="repository_id"> 
+              <% for (let i = 0; i < projects.length; i++) { %>
+                  <option value="<%= `${projects[i].id}` %>"><%= `${projects[i].name}` %></option> 
+              <% } %>
+            </select>
+            <input type="submit" value=">">
+        </form>
+    </div>
+
     <div class="logobox">
         <a class="row" href="/crud/">
             <img src="/img/mitch.png">
             <h1 class="pink">Mitch's </h1>
             <h1 class="white">GitLab App</h1>
         </a>
-    </div>
-    <div class="inputbox">
-        <form>
-            <input id="baseUrl" name="base_url" value="aaaa">
-        </form>
     </div>
     <div></div>
 </header>
