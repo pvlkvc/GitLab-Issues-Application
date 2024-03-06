@@ -15,119 +15,120 @@
             <% } %>
         </div>
         <div class="rounded gallery row">
-            <% for (let i = 0; i < issues.length; i++) { %>
-                <% if (issues[i].iid == current_issue) { %>
-                    <div class="gallery-main column">
-                        <div class="title-row row">
-                            <h1 class="title"><%= issues[i].title %></h1>
-                            <form>
+            <% if (current_issue) { %>
+                <% for (let i = 0; i < issues.length; i++) { %>
+                    <% if (issues[i].iid == current_issue) { %>
+                        <div class="gallery-main column">
+                            <div class="title-row row">
+                                <h1 class="title"><%= issues[i].title %></h1>
+                                <form>
+                                    <% if (issues[i].state == 'opened') { %>
+                                        <input class="basic-button" type="submit" value="Close">
+                                    <% } else if (issues[i].state == 'closed') { %>
+                                        <input class="title-button" type="submit" value="Open">
+                                    <% } %>
+                                </form>
+                            </div>
+                            <div class="centered-row row">
                                 <% if (issues[i].state == 'opened') { %>
-                                    <input class="basic-button" type="submit" value="Close">
+                                    <p class="status status-opened">Open</p>
                                 <% } else if (issues[i].state == 'closed') { %>
-                                    <input class="title-button" type="submit" value="Open">
-                                <% } %>
-                            </form>
-                        </div>
-                        <div class="centered-row row">
-                            <% if (issues[i].state == 'opened') { %>
-                                <p class="status status-opened">Open</p>
-                            <% } else if (issues[i].state == 'closed') { %>
-                                <p class="status status-closed">Closed</p>
-                            <% } else { %>
-                                <p class="status status-unknown"><%= issues[i].state %></p>
-                            <% } %>
-                            <p class="gray">Issue created on </p>
-                            <p class="gray"><%= new Date(issues[i].created_at).toDateString() %></p>
-                            <p class="gray">by</p>
-                            <a><p class="gray"><%= issues[i].author.name %></p></a>
-                        </div>
-                        <p class="issue-description"><%= `${issues[i].description}` %></p>
-                        <div class="activity-column column">
-                            <h2 class="subtitle">Activity</h2>
-                            <% for (let j = notes.length - 1; j >= 0; j--) { %>
-                                <% if (notes[j].system == true) { %>
-                                    <div class="system-note row">
-                                        <div class="activity-gutter column">
-                                            <p>•</p>
-                                        </div>
-                                        <p><b><%= notes[j].author.name %></b> <%= notes[j].body %></p>
-                                        <p class="gray">• <%= new Date(notes[j].created_at).toDateString() %></p>
-                                    </div>
+                                    <p class="status status-closed">Closed</p>
                                 <% } else { %>
-                                  <div class="user-note row">
-                                      <div class="activity-gutter column">
-                                          <div class="user-avatar">
-                                              <img src="<%= notes[j].author.avatar_url %>">
+                                    <p class="status status-unknown"><%= issues[i].state %></p>
+                                <% } %>
+                                <p class="gray">Issue created on </p>
+                                <p class="gray"><%= new Date(issues[i].created_at).toDateString() %></p>
+                                <p class="gray">by</p>
+                                <a><p class="gray"><%= issues[i].author.name %></p></a>
+                            </div>
+                            <p class="issue-description"><%= `${issues[i].description}` %></p>
+                            <div class="activity-column column">
+                                <h2 class="subtitle">Activity</h2>
+                                <% for (let j = notes.length - 1; j >= 0; j--) { %>
+                                    <% if (notes[j].system == true) { %>
+                                        <div class="system-note row">
+                                            <div class="activity-gutter column">
+                                                <p>•</p>
+                                            </div>
+                                            <p><b><%= notes[j].author.name %></b> <%= notes[j].body %></p>
+                                            <p class="gray">• <%= new Date(notes[j].created_at).toDateString() %></p>
+                                        </div>
+                                    <% } else { %>
+                                      <div class="user-note row">
+                                          <div class="activity-gutter column">
+                                              <div class="user-avatar">
+                                                  <img src="<%= notes[j].author.avatar_url %>">
+                                              </div>
+                                          </div>
+                                          <div class="rounded user-comment">
+                                              <p class="user-comment-author"><b><%= notes[j].author.name %></b> @<%= notes[j].author.username %> • <%= new Date(notes[j].created_at).toDateString() %></p>
+                                              <p><%= notes[j].body %></p>
                                           </div>
                                       </div>
-                                      <div class="rounded user-comment">
-                                          <p class="user-comment-author"><b><%= notes[j].author.name %></b> @<%= notes[j].author.username %> • <%= new Date(notes[j].created_at).toDateString() %></p>
-                                          <p><%= notes[j].body %></p>
-                                      </div>
-                                  </div>
+                                    <% } %>
                                 <% } %>
-                            <% } %>
-                        </div>
-                        <form>
-                            <div class="comment-form column">
-                                <textarea class="new-comment-area" placeholder="Write a comment here..."></textarea>
-                                <input class="basic-button" type="submit" value="Comment">
                             </div>
-                        </form>
-                        
-                    </div>
-                    <div class="gallery-side column">
-                        <div class="gallery-side-item">
-                            <p>Assignees</p>
-                            <% for (let j = 0; j < issues[i].assignees.length; j++) { %>
-                                <div class="row">
-                                    <img src="<%= issues[i].assignees[j].avatar_url %>">
-                                    <p><%= issues[i].assignees[j].name %></p>
+                            <form>
+                                <div class="comment-form column">
+                                    <textarea class="new-comment-area" placeholder="Write a comment here..."></textarea>
+                                    <input class="basic-button" type="submit" value="Comment">
                                 </div>
-                            <% } %>
+                            </form>
+                            
                         </div>
-                        <div class="gallery-side-item">
-                            <p>Epic</p>
-                            <% if (issues[i].epic == null) { %>
-                                <p>None</p>
-                            <% } else { %>
-                                <p><% issues[i].epic %></p>
-                            <% } %>
-                        </div>
-                        <div class="gallery-side-item">
-                            <p>Labels</p>
-                            <div class="wrap-row row">
-                              <% for (let j = 0; j < issues[i].labels.length; j++) { %>
-                                  <p class="issue-label"><%= issues[i].labels[j] %></p>
-                              <% } %>
+                        <div class="gallery-side column">
+                            <div class="gallery-side-item">
+                                <p>Assignees</p>
+                                <% for (let j = 0; j < issues[i].assignees.length; j++) { %>
+                                    <div class="row">
+                                        <img src="<%= issues[i].assignees[j].avatar_url %>">
+                                        <p><%= issues[i].assignees[j].name %></p>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="gallery-side-item">
+                                <p>Epic</p>
+                                <% if (issues[i].epic == null) { %>
+                                    <p>None</p>
+                                <% } else { %>
+                                    <p><% issues[i].epic %></p>
+                                <% } %>
+                            </div>
+                            <div class="gallery-side-item">
+                                <p>Labels</p>
+                                <div class="wrap-row row">
+                                  <% for (let j = 0; j < issues[i].labels.length; j++) { %>
+                                      <p class="issue-label"><%= issues[i].labels[j] %></p>
+                                  <% } %>
+                                </div>
+                            </div>
+                            <div class="gallery-side-item">
+                                <p>Milestone</p>
+                            </div>
+                            <div class="gallery-side-item">
+                                <p>Iteration</p>
+                            </div>
+                            <div class="gallery-side-item">
+                                <p>Weight</p>
+                            </div>
+                            <div class="gallery-side-item">
+                                <p>Due date</p>
+                            </div>
+                            <div class="gallery-side-item">
+                                <p>Time tracking</p>
+                            </div>
+                            <div class="gallery-side-item">
+                                <p>Health status</p>
+                            </div>
+                            <div class="gallery-side-item">
+                                <p>Confidentiality</p>
                             </div>
                         </div>
-                        <div class="gallery-side-item">
-                            <p>Milestone</p>
-                        </div>
-                        <div class="gallery-side-item">
-                            <p>Iteration</p>
-                        </div>
-                        <div class="gallery-side-item">
-                            <p>Weight</p>
-                        </div>
-                        <div class="gallery-side-item">
-                            <p>Due date</p>
-                        </div>
-                        <div class="gallery-side-item">
-                            <p>Time tracking</p>
-                        </div>
-                        <div class="gallery-side-item">
-                            <p>Health status</p>
-                        </div>
-                        <div class="gallery-side-item">
-                            <p>Confidentiality</p>
-                        </div>
-                    </div>
-                    <% break %>
+                        <% break %>
+                    <% } %>
                 <% } %>
             <% } %>
-
         </div>
     </main>
 </body>

@@ -1,0 +1,12 @@
+.pink-button {
+  background-color: #E574BC;
+}
+
+.pink-button:hover {
+  cursor: pointer;
+  background-color: #c75a9f;
+}
+
+.pink-button:active {
+  background-color: #cf4a9e;
+}

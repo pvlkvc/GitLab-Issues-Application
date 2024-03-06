@@ -20,7 +20,8 @@ router.get('/auth/logout', controller.authenticateLogout)
 // GitLab
 router.get('/', controller.home)
 
-router.get('/no-rep', controller.noRep)
+router.get('/config', controller.repConfig)
 router.post('/config', controller.repSave)
 
+router.get('/issue', controller.issueBlank)
 router.get('/issue/:id', controller.issue)

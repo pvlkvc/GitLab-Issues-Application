@@ -57,9 +57,7 @@ controller.authenticateCallback = async (req, res) => {
 }
 
 controller.authenticateLogout = async (req, res) => {
-  req.logout()
-  req.session.destroy()
-  res.send('You are now logged out!')
+  console.log('### Figure out how to log that out lol')
 }
 
 // Status checks
@@ -82,12 +80,12 @@ controller.isConfigured = (req, res, next) => {
     next()
   } else {
     res.status(403)
-    res.redirect('/b3/no-rep')
+    res.redirect('/b3/config')
   }
 }
 
 // Repository config
-controller.fetchProjects = async (req, res) => {
+controller.repConfig = async (req, res) => {
   console.log('# Fetching available repositories')
 
   const url = process.env.BASE_URL + '/api/v4/projects?membership=true'
@@ -98,11 +96,7 @@ controller.fetchProjects = async (req, res) => {
   const projects = await resp.json()
 
   res.data.projects = projects
-}
-
-controller.noRep = async (req, res) => {
-  await controller.fetchProjects(req, res)
-  res.render('no_rep', res.data)
+  res.render('config', res.data)
 }
 
 controller.repSave = async (req, res) => {
@@ -118,6 +112,28 @@ controller.home = async (req, res) => {
     controller.isConfigured(req, res, async () => {
       await controller.fetchProjects(req, res)
       res.render('home', res.data)
+    })
+  })
+}
+
+controller.issueBlank = async (req, res) => {
+  controller.isLoggedIn(req, res, async () => {
+    controller.isConfigured(req, res, async () => {
+      const data = res.data
+      const headers = {
+        Authorization: `Bearer ${res.data.oauth.access_token}`
+      }
+
+      console.log('# Fetching repository issues')
+
+      const url = process.env.BASE_URL + '/api/v4/projects/' + data.config.repository_id + '/issues?per_page=50'
+      const resp = await fetch(url, { headers })
+      const issues = await resp.json()
+
+      data.issues = issues
+
+      console.log('# Building website')
+      res.render('issues', data)
     })
   })
 }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<link type="text/css" href="/css/style.css" rel="stylesheet">
+<link type="text/css" href="/css/config.css" rel="stylesheet">
+
+<%- include('header') -%>
+
+<body>
+    <main class="column">
+        <p>Select repository</p>
+        <form class="row" method="post" action="/b3/config">
+            <select class="rep-select" name="repository_id" id="repository_id"> 
+              <% for (let i = 0; i < projects.length; i++) { %>
+                  <option value="<%= `${projects[i].id}` %>"><%= `${projects[i].name}` %></option> 
+              <% } %>
+            </select>
+            <input class="rep-submit pink-button" type="submit" value=">">
+        </form>
+    </main>
+</body>
+
+<%- include('footer') -%>
