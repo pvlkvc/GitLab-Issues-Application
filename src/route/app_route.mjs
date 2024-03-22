@@ -29,3 +29,6 @@ router.get('/issue/:id', controller.issue)
 router.post('/webhook/:id', controller.webhookReceive)
 
 router.get('/userinfo', controller.userInfo)
+
+// Mongo
+router.get('/delete', controller.deleteAll)

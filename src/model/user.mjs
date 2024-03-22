@@ -14,10 +14,7 @@ mongoose.connect(process.env.MONGO_URI, {
 // Create a database schema
 const Schema = mongoose.Schema
 const userSchema = new Schema({
-  username: String,
-  bcryptPassword: String,
-  accessToken: String,
-  refreshToken: String,
+  gitlabUsername: String,
   socketToken: String
 })
 
@@ -29,30 +26,23 @@ const User = mongoose.model('User', userSchema)
  * @param {Array} data of the new user
  * @returns {boolean} true if user added, false if username already exists
  */
-model.add = async (data) => {
+model.add = async (username, token) => {
   const user = new User({
-    username: data.username,
-    bcryptPassword: data.bcryptPassword,
-    accessToken: data.accessToken,
-    refreshToken: data.refreshToken,
-    socketToken: data.socketToken
+    gitlabUsername: username,
+    socketToken: token
   })
 
   await user.save()
   return true
 }
 
-model.updateAccessTokens = async (data) => {
-  await User.updateOne({ username: data.username }, { accessToken: data.accessToken, refreshToken: data.refreshToken })
+model.updateSocketToken = async (username, token) => {
+  await User.updateOne({ gitlabUsername: username }, { socketToken: token })
 }
 
-model.updateSocketToken = async (data) => {
-  await User.updateOne({ username: data.username }, { socketToken: data.socketToken })
-}
-
-model.findByUsername = async (name) => {
+model.findByUsername = async (username) => {
   return await User.find({
-    username: name
+    gitlabUsername: username
   })
 }
 
@@ -60,4 +50,8 @@ model.findBySocketToken = async (token) => {
   return await User.find({
     socketToken: token
   })
+}
+
+model.deleteAll = async () => {
+  await User.deleteMany()
 }

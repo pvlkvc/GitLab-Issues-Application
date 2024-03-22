@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import wsServer from '../websocket.mjs'
+import { model } from '../model/user.mjs'
 import { URL } from 'url'
 import { createWebhook, getIssueNotes, getIssues, getRepositories, getUserInfo, getWebhooks, requestToken } from '../api.mjs'
 
@@ -49,6 +50,18 @@ controller.authenticateCallback = async (req, res) => {
   }
   console.log(info)
 
+  // Setting up web socket token for user to use
+  console.log('# Searching for user in database')
+  const user = await model.findByUsername(info.username)
+  console.log(info.username)
+  if (user.length === 0) {
+    let token = Math.random().toString(36)
+    while ((await model.findBySocketToken(token)).length !== 0) {
+      token = Math.random().toString(36)
+    }
+    model.add(info.username, token)
+  }
+
   res.redirect('/b3')
 }
 
@@ -91,7 +104,8 @@ controller.repSave = async (req, res) => {
   // Save current repository into session
   const repID = req.body.repository_id
   req.session.config = {
-    repository_id: repID
+    repository_id: repID,
+    username: res.data.config.username
   }
 
   // Retrieve this project's webhooks and see if application already has a webhook
@@ -121,15 +135,12 @@ controller.repSave = async (req, res) => {
 // Webhook
 controller.webhookReceive = async (req, res) => {
   console.log('# Webhook POST')
-  console.log(req.body)
 
   const id = req.params.id
-  console.log(id)
+  const token = (await model.findByUsername(id))[0].socketToken
+  console.log(`# Token retrieved from DB for ${id}: ${token}`)
 
-  // send out message on web socket for this ID
-  // how? open a client socket here?? or somehow get a link to server object ??
-  // wsServer.sendToClient(id, data)
-  console.log('# [ TEST ] Should be sending webhook data out to client now via websocket')
+  wsServer.emit('webhook', token, JSON.stringify(req.body))
 }
 
 controller.userInfo = async (req, res) => {
@@ -157,7 +168,11 @@ controller.issueBlank = async (req, res) => {
       console.log('# Fetching repository issues')
       res.data.issues = await getIssues(repository, token)
 
-      // todo: include websocket connect in view
+      // Include web socket token for the user to connect to
+      const user = await model.findByUsername(res.data.config.username)
+      console.log(res.data.config.username)
+      res.data.wsToken = user[0].socketToken
+
       console.log('# Building website')
       res.render('issues', res.data)
     })
@@ -179,9 +194,17 @@ controller.issue = async (req, res) => {
       console.log('# Fetching issue notes')
       res.data.notes = await getIssueNotes(repository, res.data.current_issue, token)
 
-      // todo: include websocket connect in view
+      // Include web socket token for the user to connect to
+      const user = await model.findByUsername(res.data.config.username)
+      res.data.wsToken = user[0].socketToken
+
       console.log('# Building website')
       res.render('issues', res.data)
     })
   })
+}
+
+controller.deleteAll = async (req, res) => {
+  await model.deleteAll()
+  res.redirect('/b3')
 }

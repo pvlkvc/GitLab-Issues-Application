@@ -1,5 +1,6 @@
 // import { WebSocketServer } from 'ws'
 import WebSocket, { WebSocketServer } from 'ws'
+import { model } from '../src/model/user.mjs'
 
 const wsServer = new WebSocketServer({
   noServer: true,
@@ -7,13 +8,13 @@ const wsServer = new WebSocketServer({
 })
 
 wsServer.on('connection', (ws, req) => {
-  // todo: assign client an id
   console.log('# [WS] Connection received. Adding client.')
   wsServer.broadcastExceptSelf(ws, `New client connected (${wsServer.clients.size}).`)
 
-  // get the connected client's GITLAB ID ??
-  // option B: request API to give current id (move API calls to another class?)
-  console.log(req)
+  // Identify token's owner so data can be directed at their socket
+  const params = new URLSearchParams(req.url.slice(2))
+  console.log('# [WS] User connected with ', params.get('token'))
+  ws.socketToken = params.get('token')
 
   ws.on('message', (data) => {
     console.log(`# [WS] ws got: ${data}`)
@@ -25,7 +26,10 @@ wsServer.on('connection', (ws, req) => {
     wsServer.broadcastExceptSelf(ws, data)
   })
 
-  ws.on('close', () => console.info('# [WS] Client closed connection'))
+  ws.on('close', () => {
+    console.info('# [WS] Client closed connection')
+    console.log(wsServer.clients)
+  })
   ws.on('error', console.error)
 })
 
@@ -47,19 +51,19 @@ wsServer.broadcastExceptSelf = (ws, data) => {
   console.log(`# [WS] Broadcasted data to ${clients} (${wsServer.clients.size}) clients.`)
 }
 
-wsServer.sendToClient = (id, data) => {
-  // identify client socket
-
-  for (const i in wsServer.clients) {
-    if (wsServer.clients[i].id === id) {
-      if (wsServer.clients[i].readyState === WebSocket.OPEN) {
-        wsServer.clients[i].send(data)
+wsServer.on('webhook', (token, data) => {
+  for (const client of wsServer.clients) {
+    console.log('# [WS] Connected clients token: ', client.socketToken)
+    console.log('# [WS] Controllers token: ', token)
+    if (client.socketToken === token) {
+      console.log('# [WS] Socket client id matching')
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(data)
+        console.log('# [WS] Sent data to client.')
       }
       break
     }
   }
-
-  console.log('# [WS] Sent data to client.')
-}
+})
 
 export default wsServer

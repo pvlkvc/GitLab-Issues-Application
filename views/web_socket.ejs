@@ -1,5 +1,5 @@
 <script>
-  const url = 'wss://cscloud7-207.lnu.se/'
+  const url = 'wss://cscloud7-207.lnu.se?token=<%= wsToken %>'
   const websocket = new WebSocket(url)
 
   websocket.onopen = () => {
@@ -9,6 +9,5 @@
   websocket.onmessage = (event) => {
       console.log('web socket received message: ' + event.data)
       console.log(event)
-      const parsed = JSON.parse(event.data)
   }
 </script>
