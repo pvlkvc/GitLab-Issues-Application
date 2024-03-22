@@ -7,15 +7,17 @@
 
 <body>
     <main class="column">
-        <p>Select repository</p>
-        <form class="row" method="post" action="/b3/config">
-            <select class="rep-select" name="repository_id" id="repository_id"> 
-              <% for (let i = 0; i < projects.length; i++) { %>
-                  <option value="<%= `${projects[i].id}` %>"><%= `${projects[i].name}` %></option> 
-              <% } %>
-            </select>
-            <input class="rep-submit pink-button" type="submit" value=">">
-        </form>
+        <div class="config-main column">
+            <h2 class="subtitle">Select repository</h2>
+            <form class="column" method="post" action="/b3/config">
+                <select class="rep-select" name="repository_id" id="repository_id"> 
+                  <% for (let i = 0; i < projects.length; i++) { %>
+                      <option value="<%= `${projects[i].id}` %>"><%= `${projects[i].name}` %></option> 
+                  <% } %>
+                </select>
+                <input class="rep-submit border-button" type="submit" value="Save">
+            </form>
+        </div>
     </main>
 </body>
 

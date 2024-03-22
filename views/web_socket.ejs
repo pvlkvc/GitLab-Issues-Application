@@ -1,0 +1,14 @@
+<script>
+  const url = 'wss://cscloud7-207.lnu.se/'
+  const websocket = new WebSocket(url)
+
+  websocket.onopen = () => {
+      console.log('web socket is open: ', websocket)
+    }
+
+  websocket.onmessage = (event) => {
+      console.log('web socket received message: ' + event.data)
+      console.log(event)
+      const parsed = JSON.parse(event.data)
+  }
+</script>

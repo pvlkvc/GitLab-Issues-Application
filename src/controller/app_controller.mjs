@@ -1,4 +1,7 @@
 import * as dotenv from 'dotenv'
+import wsServer from '../websocket.mjs'
+import { URL } from 'url'
+import { createWebhook, getIssueNotes, getIssues, getRepositories, getUserInfo, getWebhooks, requestToken } from '../api.mjs'
 
 export const controller = {}
 
@@ -34,25 +37,18 @@ controller.authenticateCallback = async (req, res) => {
   const returnedCode = params.get('code')
 
   // Requesting the access token
-  const newUrl = process.env.BASE_URL + '/oauth/token'
-  const parameters = {
-    client_id: process.env.GITLAB_APP_ID,
-    client_secret: process.env.GITLAB_APP_SECRET,
-    code: returnedCode,
-    grant_type: 'authorization_code',
-    redirect_uri: process.env.GITLAB_CALLBACK_URL
-  }
-  const options = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(parameters)
-  }
-
-  const resp = await fetch(newUrl, options)
-  const data = await resp.json()
+  const data = await requestToken(returnedCode)
   req.session.oauth = {
     access_token: data.access_token
   }
+
+  // Retrieving current username
+  const info = await getUserInfo(data.access_token)
+  req.session.config = {
+    username: info.username
+  }
+  console.log(info)
+
   res.redirect('/b3')
 }
 
@@ -87,30 +83,64 @@ controller.isConfigured = (req, res, next) => {
 // Repository config
 controller.repConfig = async (req, res) => {
   console.log('# Fetching available repositories')
-
-  const url = process.env.BASE_URL + '/api/v4/projects?membership=true'
-  const headers = {
-    Authorization: `Bearer ${res.data.oauth.access_token}`
-  }
-  const resp = await fetch(url, { headers })
-  const projects = await resp.json()
-
-  res.data.projects = projects
+  res.data.projects = await getRepositories(res.data.oauth.access_token)
   res.render('config', res.data)
 }
 
 controller.repSave = async (req, res) => {
+  // Save current repository into session
+  const repID = req.body.repository_id
   req.session.config = {
-    repository_id: req.body.repository_id
+    repository_id: repID
   }
+
+  // Retrieve this project's webhooks and see if application already has a webhook
+  const hooks = await getWebhooks(repID, res.data.oauth.access_token)
+
+  // todo: possibly replace with hooks.array.forEach, but make sure other things work first...
+  let found = false
+  for (const i in hooks) {
+    const parsed = new URL(hooks[i].url)
+    if (parsed.pathname === '/b3/webhook/' + res.data.config.username) {
+      found = true
+      break
+    }
+  }
+
+  // Create new webhook if it wasn't found
+  if (!found) {
+    createWebhook(repID, res.data.config.username, res.data.oauth.access_token)
+    console.log('# Created a new webhook for user')
+  } else {
+    console.log('# User webhook already exists.')
+  }
+
   res.redirect('/b3')
+}
+
+// Webhook
+controller.webhookReceive = async (req, res) => {
+  console.log('# Webhook POST')
+  console.log(req.body)
+
+  const id = req.params.id
+  console.log(id)
+
+  // send out message on web socket for this ID
+  // how? open a client socket here?? or somehow get a link to server object ??
+  // wsServer.sendToClient(id, data)
+  console.log('# [ TEST ] Should be sending webhook data out to client now via websocket')
+}
+
+controller.userInfo = async (req, res) => {
+  const info = await getUserInfo(res.data.oauth.access_token)
+  console.log('User info: ', info)
 }
 
 // Gitlab
 controller.home = async (req, res) => {
   controller.isLoggedIn(req, res, async () => {
     controller.isConfigured(req, res, async () => {
-      await controller.fetchProjects(req, res)
       res.render('home', res.data)
     })
   })
@@ -119,21 +149,17 @@ controller.home = async (req, res) => {
 controller.issueBlank = async (req, res) => {
   controller.isLoggedIn(req, res, async () => {
     controller.isConfigured(req, res, async () => {
-      const data = res.data
-      const headers = {
-        Authorization: `Bearer ${res.data.oauth.access_token}`
-      }
+      res.data.current_issue = null
+
+      const repository = res.data.config.repository_id
+      const token = res.data.oauth.access_token
 
       console.log('# Fetching repository issues')
+      res.data.issues = await getIssues(repository, token)
 
-      const url = process.env.BASE_URL + '/api/v4/projects/' + data.config.repository_id + '/issues?per_page=50'
-      const resp = await fetch(url, { headers })
-      const issues = await resp.json()
-
-      data.issues = issues
-
+      // todo: include websocket connect in view
       console.log('# Building website')
-      res.render('issues', data)
+      res.render('issues', res.data)
     })
   })
 }
@@ -141,30 +167,21 @@ controller.issueBlank = async (req, res) => {
 controller.issue = async (req, res) => {
   controller.isLoggedIn(req, res, async () => {
     controller.isConfigured(req, res, async () => {
-      await controller.fetchProjects(req, res)
-      const data = res.data
-      const headers = {
-        Authorization: `Bearer ${res.data.oauth.access_token}`
-      }
+      // todo: check if webhook exists ?? create it if it doesn't
+      res.data.current_issue = req.params.id
+
+      const repository = res.data.config.repository_id
+      const token = res.data.oauth.access_token
 
       console.log('# Fetching repository issues')
-
-      let url = process.env.BASE_URL + '/api/v4/projects/' + data.config.repository_id + '/issues?per_page=50'
-      let resp = await fetch(url, { headers })
-      const issues = await resp.json()
-
-      data.issues = issues
+      res.data.issues = await getIssues(repository, token)
 
       console.log('# Fetching issue notes')
+      res.data.notes = await getIssueNotes(repository, res.data.current_issue, token)
 
-      data.current_issue = req.params.id
-      url = process.env.BASE_URL + '/api/v4/projects/' + data.config.repository_id + '/issues/' + data.current_issue + '/notes'
-      resp = await fetch(url, { headers })
-      const notes = await resp.json()
-      data.notes = notes
-
+      // todo: include websocket connect in view
       console.log('# Building website')
-      res.render('issues', data)
+      res.render('issues', res.data)
     })
   })
 }

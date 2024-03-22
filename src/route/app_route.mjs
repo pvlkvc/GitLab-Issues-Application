@@ -25,3 +25,7 @@ router.post('/config', controller.repSave)
 
 router.get('/issue', controller.issueBlank)
 router.get('/issue/:id', controller.issue)
+
+router.post('/webhook/:id', controller.webhookReceive)
+
+router.get('/userinfo', controller.userInfo)

@@ -7,14 +7,14 @@
 
 <body>
     <main class="row">
-        <div class="rounded issue-scroll column">
+        <div class="issue-scroll column">
             <% for (let i = 0; i < issues.length; i++) { %>
                 <form method="get" action="/b3/issue/<%= `${issues[i].iid}` %>">
                     <input class="issue-entry" type="submit" value="<%= `${issues[i].title}` %>">
                 </form>
             <% } %>
         </div>
-        <div class="rounded gallery row">
+        <div class="gallery colum">
             <% if (current_issue) { %>
                 <% for (let i = 0; i < issues.length; i++) { %>
                     <% if (issues[i].iid == current_issue) { %>
@@ -23,9 +23,9 @@
                                 <h1 class="title"><%= issues[i].title %></h1>
                                 <form>
                                     <% if (issues[i].state == 'opened') { %>
-                                        <input class="basic-button" type="submit" value="Close">
+                                        <input class="basic-button border-button" type="submit" value="Close issue">
                                     <% } else if (issues[i].state == 'closed') { %>
-                                        <input class="title-button" type="submit" value="Open">
+                                        <input class="basic-button border-button" type="submit" value="Open issue">
                                     <% } %>
                                 </form>
                             </div>
@@ -42,7 +42,36 @@
                                 <p class="gray">by</p>
                                 <a><p class="gray"><%= issues[i].author.name %></p></a>
                             </div>
-                            <p class="issue-description"><%= `${issues[i].description}` %></p>
+                            <div class="gallery-item column">
+                                <p class="issue-description"><%= `${issues[i].description}` %></p>
+                            </div>
+                            <h2 class="subtitle">Assignees</h2>
+                            <div class="gallery-item column">
+                                <% for (let j = 0; j < issues[i].assignees.length; j++) { %>
+                                    <div class="centered-row row">
+                                        <div class="user-avatar">
+                                            <img src="<%= issues[i].assignees[j].avatar_url %>">
+                                        </div>
+                                        <p><%= issues[i].assignees[j].name %></p>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <h2 class="subtitle">Epic</h2>
+                            <div class="gallery-item column">
+                                <% if (issues[i].epic == null) { %>
+                                    <p>None</p>
+                                <% } else { %>
+                                    <p><% issues[i].epic %></p>
+                                <% } %>
+                            </div>
+                            <h2 class="subtitle">Labels</h2>
+                            <div class="gallery-item column">
+                                <div class="wrap-row row">
+                                    <% for (let j = 0; j < issues[i].labels.length; j++) { %>
+                                        <p class="issue-label"><%= issues[i].labels[j] %></p>
+                                    <% } %>
+                                </div>
+                            </div>
                             <div class="activity-column column">
                                 <h2 class="subtitle">Activity</h2>
                                 <% for (let j = notes.length - 1; j >= 0; j--) { %>
@@ -72,58 +101,9 @@
                             <form>
                                 <div class="comment-form column">
                                     <textarea class="new-comment-area" placeholder="Write a comment here..."></textarea>
-                                    <input class="basic-button" type="submit" value="Comment">
+                                    <input class="basic-button border-button" type="submit" value="Comment">
                                 </div>
                             </form>
-                            
-                        </div>
-                        <div class="gallery-side column">
-                            <div class="gallery-side-item">
-                                <p>Assignees</p>
-                                <% for (let j = 0; j < issues[i].assignees.length; j++) { %>
-                                    <div class="row">
-                                        <img src="<%= issues[i].assignees[j].avatar_url %>">
-                                        <p><%= issues[i].assignees[j].name %></p>
-                                    </div>
-                                <% } %>
-                            </div>
-                            <div class="gallery-side-item">
-                                <p>Epic</p>
-                                <% if (issues[i].epic == null) { %>
-                                    <p>None</p>
-                                <% } else { %>
-                                    <p><% issues[i].epic %></p>
-                                <% } %>
-                            </div>
-                            <div class="gallery-side-item">
-                                <p>Labels</p>
-                                <div class="wrap-row row">
-                                  <% for (let j = 0; j < issues[i].labels.length; j++) { %>
-                                      <p class="issue-label"><%= issues[i].labels[j] %></p>
-                                  <% } %>
-                                </div>
-                            </div>
-                            <div class="gallery-side-item">
-                                <p>Milestone</p>
-                            </div>
-                            <div class="gallery-side-item">
-                                <p>Iteration</p>
-                            </div>
-                            <div class="gallery-side-item">
-                                <p>Weight</p>
-                            </div>
-                            <div class="gallery-side-item">
-                                <p>Due date</p>
-                            </div>
-                            <div class="gallery-side-item">
-                                <p>Time tracking</p>
-                            </div>
-                            <div class="gallery-side-item">
-                                <p>Health status</p>
-                            </div>
-                            <div class="gallery-side-item">
-                                <p>Confidentiality</p>
-                            </div>
                         </div>
                         <% break %>
                     <% } %>
@@ -134,3 +114,4 @@
 </body>
 
 <%- include('footer') -%>
+<%- include('web_socket') -%>

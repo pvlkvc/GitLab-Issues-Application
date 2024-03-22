@@ -2,6 +2,7 @@ import express from 'express'
 import session from 'express-session'
 import logger from 'morgan'
 import appRoute from './route/app_route.mjs'
+import wsServer from './websocket.mjs'
 
 const app = express()
 app.set('view engine', 'ejs')
@@ -33,13 +34,17 @@ app.use((req, res, next) => {
     access_token: null
   }
   res.data.config = {
-    repository_id: null
+    repository_id: null,
+    username: null
   }
   if (req.session && req.session.oauth) {
     res.data.oauth.access_token = req.session.oauth.access_token ?? null
   }
   if (req.session && req.session.config) {
     res.data.config.repository_id = req.session.config.repository_id ?? null
+  }
+  if (req.session && req.session.config) {
+    res.data.config.username = req.session.config.username ?? null
   }
   next()
 })
@@ -56,7 +61,14 @@ app.get('/', (req, res) => {
 app.use('/b3', appRoute)
 
 export default (port = 5050) => {
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     console.log(`Listening at port ${port}`)
+  })
+
+  // Enable upgrade requests on http to ws
+  server.on('upgrade', (request, socket, head) => {
+    wsServer.handleUpgrade(request, socket, head, socket => {
+      wsServer.emit('connection', socket, request)
+    })
   })
 }

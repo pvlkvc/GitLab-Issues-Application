@@ -1,58 +1,31 @@
-form {
-  height: 90vh;
-  font-family: monospace;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+.config-main {
+  margin: 10px;
+  padding: 10px;
+  justify-content: start;
+  border: solid #3a3a3e;
+  background-color: #222225;
+  border-width: 1px 1px 1px 1px;
 }
 
-.form-row {
-  justify-content: center;
-  align-items: center;
+.config-main .subtitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: normal;
+  padding: 5px 0px 0px 0px;
+}
+
+.config-main form {
   gap: 5px;
 }
 
-form p {
-  font-size: 32px;
-  color: rgb(119, 119, 119);
+.rep-select {
+  padding: 10px 5px 10px 5px;
+  background-color: rgba(255, 255, 255, 0.286);
+  border-radius: 5px;
+  overflow: hidden;
+  font-size: 1.5em;
 }
 
-form input[type=text] {
-  background-color: transparent;
-  font-size: 32px;
-  text-align: center;
-  color: white;
-  padding: 10px 10px 10px 10px;
-  border: solid rgb(229, 167, 220);
-  border-width: 0px 0px 3px 0px;
-  border-radius: 2px;
-  outline: none;
-}
+.rep-submit {
 
-form input[type=text]:hover {
-  background-color: rgba(0, 0, 0, 0.196);
 }
-
-form input[type=submit] {
-  width: fit-content;
-  padding: 10px 20px 10px 20px;
-  font-size: 32px;
-  color: rgb(50, 50, 50);
-  background-color: rgb(229, 167, 220);
-  border: none;
-  border-radius: 30px;
-}
-
-form input[type=submit]:hover {
-  cursor: pointer;
-  background-color: rgb(209, 149, 199);
-}
-
-.bigger-input {
-  width: 22vw;
-}
-
-.smaller-input {
-  width: 12vw;
-}
-

@@ -1,12 +1,30 @@
-.pink-button {
-  background-color: #E574BC;
+.border-button {
+  background-color: #8774e562;
+  border: 2px solid #8774e5;
+  color: white;
 }
 
-.pink-button:hover {
+.border-button:hover {
   cursor: pointer;
-  background-color: #c75a9f;
+  background-color: #5f5ac75c;
+  border: 2px solid #5f5ac7;
 }
 
-.pink-button:active {
-  background-color: #cf4a9e;
+.border-button:active {
+  background-color: #514acf59;
+  border: 2px solid #514acf;
+}
+
+.blue-button {
+  background-color: #8774e5;
+  color: white;
+}
+
+.blue-button:hover {
+  cursor: pointer;
+  background-color: #5f5ac7;
+}
+
+.blue-button:active {
+  background-color: #514acf;
 }

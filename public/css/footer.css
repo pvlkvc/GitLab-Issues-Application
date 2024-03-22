@@ -2,6 +2,7 @@ footer {
   justify-content: center;
   align-items: center;
   gap: 10px;
+  padding: 10px 0px 0px 0px;
 }
 
 footer img {
@@ -11,5 +12,5 @@ footer img {
 
 footer p {
   font-weight: normal;
-  color: #FFFFFF;
+  color: gray;
 }
