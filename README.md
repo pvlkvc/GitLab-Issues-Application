@@ -1,18 +1,28 @@
 # B3 Production
 
-- [ ] check once for application webhook existing to avoid repeating, check upon config post
-- [ ] idk if i can call session.config and only assign one username/rep_id at a time ? might need to do both at once ??
-- [ ] login/register authentication differentiation; so it doesn't always require user to press authenticate (might need to remember token for that though)
-- [ ] optimize repeating code
-- [ ] add status checks in controller (is logged in, is configured...)
-- [ ] maybe js in views works serverside?? like not inside the script tags?
-- [ ] favicon missing ? check console log
-- [ ] double check slashes in urls, if any urls are to be provided
-- [ ] pretty sure get user info fetch doesn't actually need the token??
+- [x] check once for application webhook existing to avoid repeating, check upon config post
+- [x?] idk if i can call session.config and only assign one username/rep_id at a time ? might need to do both at once ??
+       ( ? possibly missed other instances, double check ? )
+- [] add status checks in controller (is logged in, is configured...)
+- [x] send webhook data for repo on a channel
+- [x] webhook secret
+- [] store auth token in cookies
+- [x?] only send NEEDED data via websocket, don't include everything lol (? what is needed data, this might change)
+- [] send response to webhook so it's not 500
+
+- [] optimize repeating code
+- [] placement of server-side js from views
+- [] favicon missing ? check console log
+- [] double check slashes in urls, if any urls are to be provided
+- [] look into refreshing socket tokens
+- [] include description preview/date in issue scroll?
+
+- [o] login/register authentication differentiation; so it doesn't always require user to press authenticate (might need to remember token for that though)
 
 ### CSS
-- [ ] size responsitivity
-- [ ] limit empty space (? i don't remember what this was)
+- [] size responsitivity
+- [] limit empty space (? i don't remember what this was)
+- [] issues: scroll long titles on hover? in issue scroll
 
 ### Creating web socket connections WITH user id
 

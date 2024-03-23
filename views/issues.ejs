@@ -7,7 +7,7 @@
 
 <body>
     <main class="row">
-        <div class="issue-scroll column">
+        <div id="issueScroll" class="issue-scroll column">
             <% for (let i = 0; i < issues.length; i++) { %>
                 <form method="get" action="/b3/issue/<%= `${issues[i].iid}` %>">
                     <input class="issue-entry" type="submit" value="<%= `${issues[i].title}` %>">
@@ -114,4 +114,36 @@
 </body>
 
 <%- include('footer') -%>
-<%- include('web_socket') -%>
+
+<script>
+  const url = 'wss://cscloud7-207.lnu.se?token=<%= wsToken %>'
+  const websocket = new WebSocket(url)
+
+  websocket.onopen = () => {
+    console.log('web socket is open: ', websocket)
+  }
+
+  websocket.onmessage = (event) => {
+    console.log('web socket received message: ' + event.data)
+    const data = JSON.parse(event.data)
+    if (data.repository_id === <%= config.repository_id %>) {
+      addIssue(data)
+    }
+  }
+
+  function addIssue (data) {
+    const scroll = document.getElementById('issueScroll')
+
+    const input = document.createElement('input')
+    input.setAttribute('type', 'submit')
+    input.classList.add('issue-entry')
+    input.setAttribute('value', data.title)
+
+    const form = document.createElement('form')
+    form.setAttribute('method', 'get')
+    form.setAttribute('action', '/b3/issue/' + data.iid)
+
+    form.appendChild(input)
+    scroll.insertBefore(form, scroll.firstChild)
+  }
+</script>

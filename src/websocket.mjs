@@ -58,7 +58,7 @@ wsServer.on('webhook', (token, data) => {
     if (client.socketToken === token) {
       console.log('# [WS] Socket client id matching')
       if (client.readyState === WebSocket.OPEN) {
-        client.send(data)
+        client.send(JSON.stringify(data))
         console.log('# [WS] Sent data to client.')
       }
       break

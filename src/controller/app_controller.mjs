@@ -50,16 +50,16 @@ controller.authenticateCallback = async (req, res) => {
   }
   console.log(info)
 
-  // Setting up web socket token for user to use
+  // Setting up user's web socket token and webhook secret
   console.log('# Searching for user in database')
   const user = await model.findByUsername(info.username)
-  console.log(info.username)
   if (user.length === 0) {
     let token = Math.random().toString(36)
     while ((await model.findBySocketToken(token)).length !== 0) {
       token = Math.random().toString(36)
     }
-    model.add(info.username, token)
+    const secret = Math.random().toString(36)
+    model.add(info.username, secret, token)
   }
 
   res.redirect('/b3')
@@ -123,7 +123,8 @@ controller.repSave = async (req, res) => {
 
   // Create new webhook if it wasn't found
   if (!found) {
-    createWebhook(repID, res.data.config.username, res.data.oauth.access_token)
+    const user = (await model.findByUsername(res.data.config.username))[0]
+    createWebhook(repID, res.data.config.username, user.webhookSecret, res.data.oauth.access_token)
     console.log('# Created a new webhook for user')
   } else {
     console.log('# User webhook already exists.')
@@ -135,12 +136,26 @@ controller.repSave = async (req, res) => {
 // Webhook
 controller.webhookReceive = async (req, res) => {
   console.log('# Webhook POST')
-
   const id = req.params.id
-  const token = (await model.findByUsername(id))[0].socketToken
-  console.log(`# Token retrieved from DB for ${id}: ${token}`)
+  const user = (await model.findByUsername(id))[0]
 
-  wsServer.emit('webhook', token, JSON.stringify(req.body))
+  // Confirm webhook's source todo
+  const userSecret = user.webhookSecret
+  const receivedToken = req.get('x-gitlab-token')
+  console.log('User secret: ', userSecret)
+  console.log('Hook secret: ', receivedToken)
+  if (userSecret === receivedToken) {
+    // Forward webhook to user via websocket
+    const token = user.socketToken
+    const data = {
+      iid: req.body.object_attributes.iid,
+      title: req.body.object_attributes.title,
+      repository_id: req.body.project.id
+    }
+    wsServer.emit('webhook', token, data)
+  } else {
+    console.warn('# Received fake webhook for user ', id)
+  }
 }
 
 controller.userInfo = async (req, res) => {

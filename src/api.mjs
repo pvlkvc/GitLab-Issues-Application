@@ -76,18 +76,18 @@ export async function getWebhooks (repository, token) {
 /**
  * Creates a webhook via GitLab API.
  * @param {string} repository id
- * @param {string} webhookId unique id.
+ * @param {string} username unique id.
  * @param {string} token oauth bearer authorization token
  * @returns {object} issues as json
  */
-export async function createWebhook (repository, webhookId, token) {
+export async function createWebhook (repository, username, secret, token) {
   const url = process.env.BASE_URL + '/api/v4/projects/' + repository + '/hooks'
 
   const hookData = {
-    url: 'https://cscloud7-207.lnu.se/b3/webhook/' + webhookId,
+    url: 'https://cscloud7-207.lnu.se/b3/webhook/' + username,
     enable_ssl_verification: true,
     issues_events: true,
-    token: process.env.GITLAB_HOOK_TOKEN
+    token: secret
   }
 
   const options = {

@@ -15,6 +15,7 @@ mongoose.connect(process.env.MONGO_URI, {
 const Schema = mongoose.Schema
 const userSchema = new Schema({
   gitlabUsername: String,
+  webhookSecret: String,
   socketToken: String
 })
 
@@ -23,12 +24,15 @@ const User = mongoose.model('User', userSchema)
 
 /**
  * Adds a new user.
- * @param {Array} data of the new user
+ * @param {string} username of the user
+ * @param {string} secret for user's webhooks
+ * @param {string} token for user's web socket
  * @returns {boolean} true if user added, false if username already exists
  */
-model.add = async (username, token) => {
+model.add = async (username, secret, token) => {
   const user = new User({
     gitlabUsername: username,
+    webhookSecret: secret,
     socketToken: token
   })
 
