@@ -26,7 +26,7 @@ controller.unauthenticatedPage = async (req, res) => {
 
 controller.authenticateRequest = async (req, res) => {
   console.log('# Authentication request')
-  res.status(301).redirect(process.env.BASE_URL + `/oauth/authorize?client_id=${process.env.GITLAB_APP_ID}&redirect_uri=${process.env.GITLAB_CALLBACK_URL}&response_type=code&state=${process.env.GITLAB_STATE}&scope=read_api`)
+  res.status(301).redirect(process.env.BASE_URL + `/oauth/authorize?client_id=${process.env.GITLAB_APP_ID}&redirect_uri=${process.env.GITLAB_CALLBACK_URL}&response_type=code&state=${process.env.GITLAB_STATE}&scope=api`)
 }
 
 controller.authenticateCallback = async (req, res) => {
@@ -232,8 +232,8 @@ controller.issueClose = async (req, res) => {
 }
 
 controller.issueOpen = async (req, res) => {
-  console.log('# Opening an issue')
   const id = req.params.id
+  console.log('# Opening an issue')
   await openIssue(res.data.config.repository_id, id, res.data.oauth.access_token)
   res.redirect('/b3/issue/' + id)
 }

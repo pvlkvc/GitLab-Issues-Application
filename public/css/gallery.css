@@ -66,6 +66,9 @@ main .gallery {
   border: solid #37373e;
   background-color: #29292cd2;
   border-width: 0px 0px 1px 0px;
+  min-height: calc(100vh - 150px);
+  max-height: calc(100vh - 150px);
+  overflow: auto;
 }
 
 /*

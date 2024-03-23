@@ -167,7 +167,7 @@ export async function getIssueNotes (repository, issue, token) {
  * @returns {object} response
  */
 export async function closeIssue (repository, issue, token) {
-  const url = process.env.BASE_URL + '/api/v4/projects/' + repository + '/issues/' + issue
+  const url = process.env.BASE_URL + '/api/v4/projects/' + repository + '/issues/' + issue + '?state_event=close'
   const data = {
     state_event: 'close'
   }
@@ -189,7 +189,7 @@ export async function closeIssue (repository, issue, token) {
  * @returns {object} response
  */
 export async function openIssue (repository, issue, token) {
-  const url = process.env.BASE_URL + '/api/v4/projects/' + repository + '/issues/' + issue
+  const url = process.env.BASE_URL + '/api/v4/projects/' + repository + '/issues/' + issue + '?state_event=reopen'
   const data = {
     state_event: 'reopen'
   }
@@ -200,6 +200,7 @@ export async function openIssue (repository, issue, token) {
     },
     body: new URLSearchParams(data)
   }
+
   return await fetchf(url, options)
 }
 

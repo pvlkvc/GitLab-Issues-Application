@@ -10,7 +10,7 @@ app.set('view engine', 'ejs')
 // Enable the session
 app.use(session({
   cookie: {
-    maxAge: 6000000
+    maxAge: 24 * 60 * 60 * 1000
   },
   resave: false,
   saveUninitialized: true,
