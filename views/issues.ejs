@@ -2,6 +2,7 @@
 
 <link type="text/css" href="/css/style.css" rel="stylesheet">
 <link type="text/css" href="/css/gallery.css" rel="stylesheet">
+<title>Mitch's Issues</title>
 
 <%- include('header') -%>
 
@@ -21,13 +22,15 @@
                         <div class="gallery-main column">
                             <div class="title-row row">
                                 <h1 class="title"><%= issues[i].title %></h1>
-                                <form>
                                     <% if (issues[i].state == 'opened') { %>
-                                        <input class="basic-button border-button" type="submit" value="Close issue">
+                                      <form method="POST" action="/b3/issue/<%= `${issues[i].iid}` %>/close">
+                                          <input class="basic-button border-button" type="submit" value="Close issue">
+                                      </form>
                                     <% } else if (issues[i].state == 'closed') { %>
-                                        <input class="basic-button border-button" type="submit" value="Open issue">
+                                      <form method="POST" action="/b3/issue/<%= `${issues[i].iid}` %>/open">
+                                          <input class="basic-button border-button" type="submit" value="Open issue">
+                                      </form>
                                     <% } %>
-                                </form>
                             </div>
                             <div class="centered-row row">
                                 <% if (issues[i].state == 'opened') { %>
@@ -98,9 +101,9 @@
                                     <% } %>
                                 <% } %>
                             </div>
-                            <form>
+                            <form method="POST" action="/b3/issue/<%= `${issues[i].iid}` %>/comment">
                                 <div class="comment-form column">
-                                    <textarea class="new-comment-area" placeholder="Write a comment here..."></textarea>
+                                    <textarea class="new-comment-area" placeholder="Write a comment here..." name="comment"></textarea>
                                     <input class="basic-button border-button" type="submit" value="Comment">
                                 </div>
                             </form>
@@ -119,12 +122,7 @@
   const url = 'wss://cscloud7-207.lnu.se?token=<%= wsToken %>'
   const websocket = new WebSocket(url)
 
-  websocket.onopen = () => {
-    console.log('web socket is open: ', websocket)
-  }
-
   websocket.onmessage = (event) => {
-    console.log('web socket received message: ' + event.data)
     const data = JSON.parse(event.data)
     if (data.repository_id === <%= config.repository_id %>) {
       addIssue(data)

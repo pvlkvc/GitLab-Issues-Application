@@ -1,0 +1,12 @@
+main p {
+  font-size: 1.5em;
+  font-weight: bold;
+  background-color: #29292cbc;
+  border-radius: 50px;
+  padding: 20px;
+}
+
+main {
+  justify-content: center;
+  align-items: center;
+}

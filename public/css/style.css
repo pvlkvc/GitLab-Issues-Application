@@ -12,6 +12,7 @@ body {
   margin: 0;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: #29292c;
+  background-image: url('../img/mitchs_bg.png');
   overflow-x: hidden;
 }
 

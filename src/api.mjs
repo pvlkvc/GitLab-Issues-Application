@@ -5,7 +5,7 @@ dotenv.config()
 /**
  * Requests the OAuth token for GitLab API.
  * @param {string} returnedCode obtained from previous authorize redirect
- * @returns {object} user info as json
+ * @returns {object} response
  */
 export async function requestToken (returnedCode) {
   const url = process.env.BASE_URL + '/oauth/token'
@@ -15,6 +15,26 @@ export async function requestToken (returnedCode) {
     code: returnedCode,
     grant_type: 'authorization_code',
     redirect_uri: process.env.GITLAB_CALLBACK_URL
+  }
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(parameters)
+  }
+  return await fetchf(url, options)
+}
+
+/**
+ * Revokes the OAuth token for GitLab API.
+ * @param {string} authToken previously used token
+ * @returns {object} response
+ */
+export async function revokeToken (authToken) {
+  const url = process.env.BASE_URL + '/oauth/revoke'
+  const parameters = {
+    client_id: process.env.GITLAB_APP_ID,
+    client_secret: process.env.GITLAB_APP_SECRET,
+    token: authToken
   }
   const options = {
     method: 'POST',
@@ -54,7 +74,6 @@ export async function getRepositories (token) {
   return await fetchf(url, options)
 }
 
-
 /**
  * Fetches repository webhooks list via GitLab API.
  * @param {string} repository id
@@ -69,14 +88,19 @@ export async function getWebhooks (repository, token) {
       Authorization: `Bearer ${token}`
     }
   }
-
-  return await fetchf(url, options)
+  const resp = await fetch(url, options)
+  if (resp.status === 200) {
+    return await fetchf(url, options)
+  } else {
+    return null
+  }
 }
 
 /**
  * Creates a webhook via GitLab API.
  * @param {string} repository id
  * @param {string} username unique id.
+ * @param {secret} secret to authenticate webhooks with
  * @param {string} token oauth bearer authorization token
  * @returns {object} issues as json
  */
@@ -131,6 +155,75 @@ export async function getIssueNotes (repository, issue, token) {
     headers: {
       Authorization: `Bearer ${token}`
     }
+  }
+  return await fetchf(url, options)
+}
+
+/**
+ * Closes an issue via GitLab API.
+ * @param {string} repository id where the issue is located
+ * @param {string} issue id
+ * @param {string} token oauth bearer authorization token
+ * @returns {object} response
+ */
+export async function closeIssue (repository, issue, token) {
+  const url = process.env.BASE_URL + '/api/v4/projects/' + repository + '/issues/' + issue
+  const data = {
+    state_event: 'close'
+  }
+  const options = {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: new URLSearchParams(data)
+  }
+  return await fetchf(url, options)
+}
+
+/**
+ * Closes an issue via GitLab API.
+ * @param {string} repository id where the issue is located
+ * @param {string} issue id
+ * @param {string} token oauth bearer authorization token
+ * @returns {object} response
+ */
+export async function openIssue (repository, issue, token) {
+  const url = process.env.BASE_URL + '/api/v4/projects/' + repository + '/issues/' + issue
+  const data = {
+    state_event: 'reopen'
+  }
+  const options = {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: new URLSearchParams(data)
+  }
+  return await fetchf(url, options)
+}
+
+/**
+ * Closes an issue via GitLab API.
+ * @param {string} repository id where the issue is located
+ * @param {string} issue id
+ * @param {string} comment body
+ * @param {string} token oauth bearer authorization token
+ * @returns {object} response
+ */
+export async function commentIssue (repository, issue, comment, token) {
+  const url = process.env.BASE_URL + '/api/v4/projects/' + repository + '/issues/' + issue + '/notes'
+  const data = {
+    id: repository,
+    issue_iid: issue,
+    body: comment
+  }
+  const options = {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: new URLSearchParams(data)
   }
   return await fetchf(url, options)
 }

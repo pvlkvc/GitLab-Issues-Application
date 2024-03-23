@@ -1,5 +1,5 @@
 import express from 'express'
-import session from 'express-session'
+import session from 'cookie-session'
 import logger from 'morgan'
 import appRoute from './route/app_route.mjs'
 import wsServer from './websocket.mjs'

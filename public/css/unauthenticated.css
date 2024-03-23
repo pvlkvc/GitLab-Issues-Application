@@ -1,0 +1,16 @@
+main a {
+  color: white;
+  background-color: rgb(171, 92, 170);
+  padding: 10px 20px 10px 20px;
+  border-radius: 5px;
+}
+
+main a:hover {
+  cursor: pointer;
+  background-color: rgb(130, 63, 129);
+}
+
+main {
+  justify-content: center;
+  align-items: center;
+}

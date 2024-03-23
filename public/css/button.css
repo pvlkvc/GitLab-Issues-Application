@@ -1,30 +1,30 @@
 .border-button {
-  background-color: #8774e562;
-  border: 2px solid #8774e5;
+  background-color: #e574dd62;
+  border: 2px solid #e574d4;
   color: white;
 }
 
 .border-button:hover {
   cursor: pointer;
-  background-color: #5f5ac75c;
-  border: 2px solid #5f5ac7;
+  background-color: #be5ac75c;
+  border: 2px solid #c75ac7;
 }
 
 .border-button:active {
-  background-color: #514acf59;
-  border: 2px solid #514acf;
+  background-color: #cf4ac859;
+  border: 2px solid #cf4ac2;
 }
 
 .blue-button {
-  background-color: #8774e5;
+  background-color: #e574da;
   color: white;
 }
 
 .blue-button:hover {
   cursor: pointer;
-  background-color: #5f5ac7;
+  background-color: #c75ab5;
 }
 
 .blue-button:active {
-  background-color: #514acf;
+  background-color: #cf4acf;
 }

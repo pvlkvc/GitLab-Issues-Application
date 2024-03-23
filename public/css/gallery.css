@@ -30,9 +30,12 @@ Left side issue scroll
 */
 .issue-scroll {
   border: solid #37373e;
+  background-color: #222225e4;
   border-width: 0px 1px 1px 0px;
   width: 25%;
   min-height: calc(100vh - 110px);
+  max-height: calc(100vh - 110px);
+  overflow: auto;
 }
 
 .issue-entry {
@@ -49,7 +52,7 @@ Left side issue scroll
 
 .issue-entry:hover {
   cursor: pointer;
-  background-color: rgb(36, 36, 36);
+  background-color: #222225;
 }
 
 /*
@@ -61,6 +64,7 @@ main .gallery {
   gap: 10px;
   padding: 20px;
   border: solid #37373e;
+  background-color: #29292cd2;
   border-width: 0px 0px 1px 0px;
 }
 

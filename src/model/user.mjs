@@ -41,7 +41,7 @@ model.add = async (username, secret, token) => {
 }
 
 model.updateSocketToken = async (username, token) => {
-  await User.updateOne({ gitlabUsername: username }, { socketToken: token })
+  await User.findOneAndUpdate({ gitlabUsername: username }, { socketToken: token })
 }
 
 model.findByUsername = async (username) => {
